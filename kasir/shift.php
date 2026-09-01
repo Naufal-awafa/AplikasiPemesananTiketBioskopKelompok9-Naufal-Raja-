@@ -7,13 +7,12 @@ $pdo = Database::getInstance()->getKoneksi();
 $aktif = FiturBioskop::pastikanShiftHarian($user->getId());
 
 $stmtRingkasan = $pdo->prepare(
-    "SELECT COUNT(*) jumlah_transaksi,
-            COALESCE(SUM(total_harga),0) total_penjualan,
+    "SELECT COUNT(*) jumlah_transaksi,COALESCE(SUM(total_harga),0) total_penjualan,
             COALESCE(SUM(CASE WHEN metode_bayar LIKE 'Tunai%' THEN total_harga ELSE 0 END),0) total_tunai
-     FROM tiket
-     WHERE kasir_id=? AND status IN ('lunas','terpakai') AND DATE(dibuat_pada)=CURDATE()",
+     FROM (SELECT total_harga,metode_bayar FROM tiket WHERE kasir_id=? AND status IN ('lunas','terpakai') AND DATE(dibuat_pada)=CURDATE()
+           UNION ALL SELECT total_harga,metode_bayar FROM transaksi_produk WHERE kasir_id=? AND status='sukses' AND DATE(dibuat_pada)=CURDATE()) transaksi",
 );
-$stmtRingkasan->execute([$user->getId()]);
+$stmtRingkasan->execute([$user->getId(), $user->getId()]);
 $ringkasanHariIni = $stmtRingkasan->fetch();
 
 $stmt = $pdo->prepare(
@@ -26,13 +25,15 @@ $stmt = $pdo->prepare(
         FROM shift_kasir WHERE kasir_id=? GROUP BY DATE(mulai)
      ) h
      LEFT JOIN (
-        SELECT DATE(dibuat_pada) tanggal,COUNT(*) jumlah_transaksi,SUM(total_harga) total_penjualan,
+        SELECT tanggal,COUNT(*) jumlah_transaksi,SUM(total_harga) total_penjualan,
                SUM(CASE WHEN metode_bayar LIKE 'Tunai%' THEN total_harga ELSE 0 END) total_tunai
-        FROM tiket WHERE kasir_id=? AND status IN ('lunas','terpakai') GROUP BY DATE(dibuat_pada)
+        FROM (SELECT DATE(dibuat_pada) tanggal,total_harga,metode_bayar FROM tiket WHERE kasir_id=? AND status IN ('lunas','terpakai')
+              UNION ALL SELECT DATE(dibuat_pada),total_harga,metode_bayar FROM transaksi_produk WHERE kasir_id=? AND status='sukses') gabungan
+        GROUP BY tanggal
      ) t ON t.tanggal=h.tanggal
      ORDER BY h.tanggal DESC LIMIT 30",
 );
-$stmt->execute([$user->getId(), $user->getId()]);
+$stmt->execute([$user->getId(), $user->getId(), $user->getId()]);
 $riwayat = $stmt->fetchAll();
 
 $judulHalaman = 'Shift Kasir — Sineverse';

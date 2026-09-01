@@ -24,6 +24,13 @@ if ($studio) {
     }
 }
 $labelKursi = implode(', ', array_map(fn($id) => $petaKursi[$id] ?? '-', $tiket->getKursiIds()));
+$stmtProduk = Database::getInstance()->getKoneksi()->prepare('SELECT pp.*,p.nama FROM pesanan_produk pp JOIN produk p ON p.id=pp.produk_id WHERE pp.tiket_id=? ORDER BY pp.id');
+$stmtProduk->execute([$tiket->getId()]);
+$produkPesanan = $stmtProduk->fetchAll();
+$barisProduk = '';
+foreach ($produkPesanan as $item) {
+    $barisProduk .= '<tr><td class="label">Snack</td><td class="value">' . htmlspecialchars($item['nama'] . ' (' . ucfirst($item['ukuran']) . ') × ' . $item['jumlah']) . ' — ' . htmlspecialchars(formatRupiah((int) $item['harga_satuan'] * (int) $item['jumlah'])) . '</td></tr>';
+}
 
 /**
  * File struk dibuat sebagai dokumen HTML mandiri (self-contained, seluruh CSS
@@ -73,6 +80,7 @@ td.value{font-weight:700;text-align:right;}
             <tr><td class="label">Kursi</td><td class="value">' .
     htmlspecialchars($labelKursi) .
     '</td></tr>
+            ' . $barisProduk . '
             <tr><td class="label">Metode Bayar</td><td class="value">' .
     htmlspecialchars($tiket->getMetodeBayar()) .
     '</td></tr>

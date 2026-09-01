@@ -21,8 +21,8 @@ $menuSidebar = [
     'kasir' => [
         'index' => [ikon('home', 18), 'Dashboard', 'index.php'],
         'qr' => [ikon('qrcode', 18), 'Validasi QR Tiket', 'validasi-qr.php'],
-        'walkin' => [ikon('ticket', 18), 'Pesan Walk-in', 'walkin.php'],
-        'riwayat' => [ikon('clock', 18), 'Riwayat Walk-in', 'riwayat.php'],
+        'walkin' => [ikon('ticket', 18), 'Kasir Tiket & Snack', 'walkin.php'],
+        'riwayat' => [ikon('clock', 18), 'Riwayat Transaksi', 'riwayat.php'],
         'shift' => [ikon('clock', 18), 'Shift Kasir', 'shift.php'],
     ],
     'manajer' => [

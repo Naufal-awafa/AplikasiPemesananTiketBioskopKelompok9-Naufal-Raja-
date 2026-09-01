@@ -26,6 +26,9 @@ if ($studio) {
 $labelKursi = array_map(fn($id) => $petaKursi[$id] ?? '-', $tiket->getKursiIds());
 
 $kembalian = (int) ($_GET['kembalian'] ?? 0);
+$stmtProduk = Database::getInstance()->getKoneksi()->prepare('SELECT pp.*,p.nama FROM pesanan_produk pp JOIN produk p ON p.id=pp.produk_id WHERE pp.tiket_id=? ORDER BY pp.id');
+$stmtProduk->execute([$tiket->getId()]);
+$produkPesanan = $stmtProduk->fetchAll();
 
 $judulHalaman = 'Struk Transaksi — ' . $tiket->getKodeTiket();
 require __DIR__ . '/../includes/header.php';
@@ -63,6 +66,11 @@ require __DIR__ . '/../includes/header.php';
                 <div><div class="label">Kursi</div><div class="value"><?= amankan(
                     implode(', ', $labelKursi),
                 ) ?></div></div>
+                <?php if ($produkPesanan): ?>
+                    <div style="grid-column:1/-1"><div class="label">Snack &amp; Minuman</div><div class="value"><?php foreach ($produkPesanan as $item): ?><div><?= amankan($item['nama']) ?> (<?= amankan(ucfirst($item['ukuran'])) ?>) × <?= (int) $item['jumlah'] ?> — <?= formatRupiah((int) $item['harga_satuan'] * (int) $item['jumlah']) ?></div><?php endforeach; ?></div></div>
+                    <div><div class="label">Subtotal Tiket</div><div class="value"><?= formatRupiah($tiket->getSubtotalHarga()) ?></div></div>
+                    <div><div class="label">Subtotal Snack</div><div class="value"><?= formatRupiah($tiket->getTotalProduk()) ?></div></div>
+                <?php endif; ?>
                 <div><div class="label">Metode Bayar</div><div class="value"><?= amankan(
                     $tiket->getMetodeBayar(),
                 ) ?></div></div>

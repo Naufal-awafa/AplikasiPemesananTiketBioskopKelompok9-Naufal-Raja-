@@ -331,7 +331,9 @@ function initSeatPicker() {
     }
 
     const total = terpilih.reduce((acc, s) => acc + (s.classList.contains('vip') ? hargaVip : hargaReguler), 0);
-    if (totalHargaEl) totalHargaEl.textContent = formatRupiahJS(total);
+    document.body.dataset.ticketTotal = String(total);
+    document.dispatchEvent(new CustomEvent('ticket-total-change'));
+    if (totalHargaEl && !document.getElementById('ringkasan-produk')) totalHargaEl.textContent = formatRupiahJS(total);
     if (btnLanjut) btnLanjut.disabled = terpilih.length === 0;
   }
 

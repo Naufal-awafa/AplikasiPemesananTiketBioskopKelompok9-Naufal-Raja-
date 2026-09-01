@@ -84,7 +84,7 @@ require __DIR__ . '/includes/header.php';
         <div class="menu-order-note glass reveal"><?= ikon(
             'info',
             18,
-        ) ?><span>Menu ini tidak dibeli terpisah. Tambahkan produk ketika checkout tiket agar masuk ke pesanan yang sama.</span></div>
+        ) ?><span>Menu dapat ditambahkan saat checkout tiket atau dibeli terpisah langsung melalui kasir.</span></div>
     <?php else: ?>
         <div class="empty-state glass"><div class="icon"><?= ikon(
             'food',
