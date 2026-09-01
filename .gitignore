@@ -1,0 +1,20 @@
+# Konfigurasi rahasia lokal
+config/Tmdb.local.php
+
+# Profil browser dan hasil rekaman demo
+storage/chrome-demo-profile*/
+storage/edge-demo-profile/
+storage/demo-frames/
+storage/backups/
+storage/zip-inspect-*/
+storage/zip-verify-*/
+demo-sineverse.mp4
+
+# Foto profil unggahan pengguna
+assets/img/profil/*
+!assets/img/profil/.gitkeep
+
+# File sistem/editor lokal
+.DS_Store
+Thumbs.db
+*.log
